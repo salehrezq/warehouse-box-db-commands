@@ -1,0 +1,87 @@
+
+CREATE TABLE IF NOT EXISTS quantity_unit (
+id INT NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(10) NOT NULL,
+PRIMARY KEY (id),
+UNIQUE (name)
+);
+
+CREATE TABLE IF NOT EXISTS items (
+id INT NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(50) NOT NULL,
+`specification` VARCHAR(200) NULL,
+`unit_id` INT NOT NULL,
+
+PRIMARY KEY (id),
+
+FOREIGN KEY (unit_id)
+	REFERENCES quantity_unit(id)
+	ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS images (
+id INT NOT NULL AUTO_INCREMENT,
+`item_id` INT NOT NULL,
+`name` VARCHAR(41) NOT NULL,
+`order` INT NOT NULL,
+`default_image` BOOL NOT NULL,
+`scale` DECIMAL(3,2) NOT NULL DEFAULT 0.6,
+
+PRIMARY KEY (id),
+
+FOREIGN KEY (item_id)
+	REFERENCES items(id)
+	ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS recipients (
+id INT NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(255) NOT NULL,
+PRIMARY KEY (id),
+UNIQUE (name)
+);
+
+CREATE TABLE IF NOT EXISTS source (
+id INT NOT NULL AUTO_INCREMENT,
+`information` VARCHAR(255) NOT NULL,
+PRIMARY KEY (id),
+UNIQUE (information)
+);
+
+CREATE TABLE IF NOT EXISTS inwards (
+`id` INT NOT NULL AUTO_INCREMENT,
+`item_id` INT NOT NULL,
+`quantity` DECIMAL(8,2) NOT NULL,
+`source_id` INT NULL,
+`date` DATE NOT NULL,
+
+PRIMARY KEY (id),
+
+FOREIGN KEY (item_id)
+	REFERENCES items(id)
+	ON DELETE CASCADE,
+	
+	FOREIGN KEY (source_id)
+	REFERENCES source(id)
+	ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS outwards (
+`id` INT NOT NULL AUTO_INCREMENT,
+`item_id` INT NOT NULL,
+`quantity` DECIMAL(8,2) NOT NULL,
+`recipient_id` INT NOT NULL,
+`for` VARCHAR(255) NOT NULL,
+`date` DATE NOT NULL,
+
+PRIMARY KEY (id),
+
+FOREIGN KEY (item_id)
+	REFERENCES items(id)
+	ON DELETE CASCADE,
+	
+	FOREIGN KEY (recipient_id)
+	REFERENCES recipients(id)
+	ON DELETE CASCADE
+);
